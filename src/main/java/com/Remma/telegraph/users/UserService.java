@@ -1,8 +1,8 @@
 package com.Remma.telegraph.users;
 
 import com.Remma.telegraph.configs.PasswordConfig;
+import com.Remma.telegraph.utils.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
-import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,15 +18,17 @@ public class UserService implements UserDetailsService {
     private final UserRepository repository;
     private final UserMapper mapper;
     private final PasswordEncoder encoder;
+    private final SecurityUtils securityUtils;
 
     public UserService(
             UserRepository repository,
             UserMapper mapper,
-            PasswordEncoder encoder
+            PasswordEncoder encoder, SecurityUtils securityUtils
     ) {
         this.repository = repository;
         this.mapper = mapper;
         this.encoder = encoder;
+        this.securityUtils = securityUtils;
     }
     
     public void createUser(UserRequest request) {
@@ -46,6 +48,12 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new EntityNotFoundException("Not found user by id = " + id));
     }
 
+    public UserResponse getUserByUsername(String username) {
+        return repository.findByUsername(username)
+                .map(mapper::toDomain)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
     public void updateUser(Long id, UserRequest request) {
         var founded = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Not found user by id = " + id));
@@ -63,6 +71,10 @@ public class UserService implements UserDetailsService {
             throw new EntityNotFoundException("Not found user by id = " + id);
         }
         repository.deleteById(id);
+    }
+
+    public UserEntity getCurrentUserEntity() {
+        return securityUtils.getCurrentUser();
     }
 
     @Override

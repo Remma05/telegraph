@@ -1,5 +1,6 @@
 package com.Remma.telegraph.messages;
 
+import com.Remma.telegraph.chats.ChatEntity;
 import com.Remma.telegraph.users.UserEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,13 +13,13 @@ public class MessageEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "sender_id")
     @ManyToOne
-    private UserEntity sender;
+    @JoinColumn(name = "chat_id")
+    private ChatEntity chat;
 
-    @JoinColumn(name = "receiver_id")
     @ManyToOne
-    private UserEntity receiver;
+    @JoinColumn(name = "sender_id")
+    private UserEntity sender;
 
     @Column
     private String text;
@@ -27,18 +28,21 @@ public class MessageEntity {
     @CreationTimestamp
     private LocalDateTime sentAt;
 
+    @Column
+    private LocalDateTime readAt;
+
     public MessageEntity() {}
 
     public MessageEntity(
             Long id,
+            ChatEntity chat,
             UserEntity sender,
-            UserEntity receiver,
             String text,
             LocalDateTime sentAt
     ) {
         this.id = id;
+        this.chat = chat;
         this.sender = sender;
-        this.receiver = receiver;
         this.text = text;
         this.sentAt = sentAt;
     }
@@ -51,20 +55,20 @@ public class MessageEntity {
         this.id = id;
     }
 
+    public ChatEntity getChat() {
+        return chat;
+    }
+
+    public void setChat(ChatEntity chat) {
+        this.chat = chat;
+    }
+
     public UserEntity getSender() {
         return sender;
     }
 
     public void setSender(UserEntity sender) {
         this.sender = sender;
-    }
-
-    public UserEntity getReceiver() {
-        return receiver;
-    }
-
-    public void setReceiver(UserEntity receiver) {
-        this.receiver = receiver;
     }
 
     public String getText() {
@@ -81,5 +85,13 @@ public class MessageEntity {
 
     public void setSentAt(LocalDateTime sentAt) {
         this.sentAt = sentAt;
+    }
+
+    public LocalDateTime getReadAt() {
+        return readAt;
+    }
+
+    public void setReadAt(LocalDateTime readAt) {
+        this.readAt = readAt;
     }
 }

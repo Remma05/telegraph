@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("message")
+@RequestMapping("/a")
 public class MessageController {
     private static final Logger log = LoggerFactory.getLogger(MessageController.class);
 
@@ -18,32 +18,21 @@ public class MessageController {
         this.messageService = messageService;
     }
 
-    @PostMapping
+    @PostMapping("/{userId}")
     public ResponseEntity<MessageResponse> createMessage(
+            @PathVariable(name = "userId") Long userId,
             @RequestBody MessageRequest request
     ) {
         log.info("Called method createMessage");
-        return ResponseEntity.ok(messageService.createMessage(request));
+        return ResponseEntity.ok(messageService.createMessage(userId, request));
     }
 
-    @GetMapping("/sent-messages")
-    public ResponseEntity<List<MessageResponse>> getAllSentMessages() {
-        log.info("Called method getAllSentMessages");
-        return ResponseEntity.ok(messageService.getAllSentMessages());
-    }
-
-    @GetMapping("/received-messages")
-    public ResponseEntity<List<MessageResponse>> getAllReceivedMessages() {
-        log.info("Called method getAllReceivedMessages");
-        return ResponseEntity.ok(messageService.getAllReceivedMessages());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<MessageResponse> getMessageById(
-            @PathVariable(name = "id") Long id
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<MessageResponse>> getAllMessagesByUserId(
+            @PathVariable(name = "userId") Long userId
     ) {
-        log.info("Called method getMessageById, id = {}", id);
-        return ResponseEntity.ok(messageService.getMessageById(id));
+        log.info("Called method getAllMessagesByUserId");
+        return ResponseEntity.ok(messageService.getAllMessagesByUserId(userId));
     }
 
     @PutMapping("/{id}")

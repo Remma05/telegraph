@@ -1,7 +1,9 @@
 package com.Remma.telegraph.messages;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record MessageRequest(
-        Long receiverId,
+        @NotBlank
         String text
 ) {
 }

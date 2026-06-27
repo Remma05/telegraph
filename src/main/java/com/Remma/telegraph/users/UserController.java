@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
@@ -32,6 +32,14 @@ public class UserController {
     ) {
         log.info("Called method getUserById, id = {}", id);
         return ResponseEntity.ok(service.getUserById(id));
+    }
+
+    @GetMapping("/by-username/{username}")
+    public ResponseEntity<UserResponse> getUserByUsername(
+            @PathVariable(name = "username") String username
+    ) {
+        log.info("Called method getUserByUsername, username = {}", username);
+        return ResponseEntity.ok(service.getUserByUsername(username));
     }
 
     @PutMapping("/{id}/update")
