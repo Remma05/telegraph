@@ -3,6 +3,7 @@ package com.Remma.telegraph.configs;
 import com.Remma.telegraph.users.UserService;
 import com.Remma.telegraph.users.jwt.JwtAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,13 +26,16 @@ public class SecurityConfig {
 
     @Autowired private PasswordConfig passwordConfig;
 
+    @Value("${cors.allowed-origins}")
+    private String allowedOrigins;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new org.springframework.web.cors.CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:63342"));
+                    config.setAllowedOrigins(List.of(allowedOrigins.split(",")));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(false);
@@ -39,7 +43,7 @@ public class SecurityConfig {
                 }))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/users/register", "/*.html", "/**.css",
-                                "/**.js", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                                "/**.js", "/swagger-ui/**", "/v3/api-docs/**", "/ws/**", "/ws").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
